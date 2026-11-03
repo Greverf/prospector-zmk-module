@@ -3,7 +3,7 @@
 #include <lvgl.h>
 #include <zephyr/kernel.h>
 
-#define WPM_BAR_COUNT 26
+#define WPM_BAR_COUNT 22
 #define WPM_MAX 120
 
 struct zmk_widget_wpm_meter {
