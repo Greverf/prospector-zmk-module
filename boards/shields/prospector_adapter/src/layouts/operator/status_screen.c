@@ -34,5 +34,11 @@ lv_obj_t *zmk_display_status_screen() {
     zmk_widget_output_init(&output_widget, screen);
     lv_obj_set_pos(zmk_widget_output_obj(&output_widget), 140, 170);
 
+    lv_obj_remove_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_remove_flag(zmk_widget_modifier_indicator_obj(&modifier_indicator_widget), LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_remove_flag(zmk_widget_wpm_meter_obj(&wpm_meter_widget), LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_remove_flag(zmk_widget_layer_display_obj(&layer_display_widget), LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_remove_flag(zmk_widget_battery_circles_obj(&battery_circles_widget), LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_remove_flag(zmk_widget_output_obj(&output_widget), LV_OBJ_FLAG_SCROLLABLE);
     return screen;
 }
