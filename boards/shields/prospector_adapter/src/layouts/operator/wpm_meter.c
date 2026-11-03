@@ -166,7 +166,7 @@ int zmk_widget_wpm_meter_init(struct zmk_widget_wpm_meter *widget, lv_obj_t *par
     int bar_gap = 2;
     int bar_height = 90;
     int total_width = WPM_BAR_COUNT * bar_width + (WPM_BAR_COUNT - 1) * bar_gap;
-    int start_x = (260 - total_width) / 2;
+    int start_x = (220 - total_width) / 2;
 
     for (int i = 0; i < WPM_BAR_COUNT; i++) {
         widget->bars[i] = lv_obj_create(widget->obj);
