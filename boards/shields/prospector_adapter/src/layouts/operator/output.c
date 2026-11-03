@@ -108,6 +108,7 @@ static lv_obj_t *create_toggle_btn(lv_obj_t *parent, const char *text, int x) {
     lv_obj_t *btn = lv_obj_create(parent);
     lv_obj_set_size(btn, 44, 29);
     lv_obj_set_pos(btn, x, 0);
+    lv_obj_remove_flag(btn, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_radius(btn, 6, LV_PART_MAIN);
     lv_obj_set_style_pad_all(btn, 0, LV_PART_MAIN);
 
@@ -124,6 +125,7 @@ static lv_obj_t *create_slot_btn(lv_obj_t *parent, int index, int x, int width, 
     lv_obj_t *slot = lv_obj_create(parent);
     lv_obj_set_size(slot, width, 29);
     lv_obj_set_pos(slot, x, 33);
+    lv_obj_remove_flag(slot, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_radius(slot, 6, LV_PART_MAIN);
     lv_obj_set_style_bg_opa(slot, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_set_style_border_width(slot, 0, LV_PART_MAIN);
