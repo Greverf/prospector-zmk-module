@@ -151,10 +151,10 @@ int zmk_widget_output_init(struct zmk_widget_output *widget, lv_obj_t *parent) {
     lv_obj_set_style_pad_all(widget->obj, 0, LV_PART_MAIN);
 
     widget->usb_btn = create_toggle_btn(widget->obj, "USB", 0);
-    widget->ble_btn = create_toggle_btn(widget->obj, "BLE", 58);
+    widget->ble_btn = create_toggle_btn(widget->obj, "BLE", 46);
 
     int slot_spacing = 2;
-    int slot_width = (116 - (ZMK_BLE_PROFILE_COUNT - 1) * slot_spacing) / ZMK_BLE_PROFILE_COUNT;
+    int slot_width = (90 - (ZMK_BLE_PROFILE_COUNT - 1) * slot_spacing) / ZMK_BLE_PROFILE_COUNT;
     bool show_numbers = (ZMK_BLE_PROFILE_COUNT <= 5);
 
     for (int i = 0; i < ZMK_BLE_PROFILE_COUNT; i++) {
