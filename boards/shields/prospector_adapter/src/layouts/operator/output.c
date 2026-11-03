@@ -106,7 +106,7 @@ ZMK_SUBSCRIPTION(widget_output_profile, zmk_ble_active_profile_changed);
 
 static lv_obj_t *create_toggle_btn(lv_obj_t *parent, const char *text, int x) {
     lv_obj_t *btn = lv_obj_create(parent);
-    lv_obj_set_size(btn, 56, 29);
+    lv_obj_set_size(btn, 44, 29);
     lv_obj_set_pos(btn, x, 0);
     lv_obj_set_style_radius(btn, 6, LV_PART_MAIN);
     lv_obj_set_style_pad_all(btn, 0, LV_PART_MAIN);
