@@ -4,6 +4,8 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/led.h>
 #include <zephyr/sys/printk.h>
+#include <zmk/event_manager.h>
+#include <zmk/events/activity_state_changed.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(als, 4);
@@ -155,4 +157,19 @@ static int init_fixed_brightness(void) {
 
 SYS_INIT(init_fixed_brightness, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
 
+// Apaga la luz de fondo al quedar inactivo y la restaura al escribir.
+static int backlight_activity_listener(const zmk_event_t *eh) {
+    const struct zmk_activity_state_changed *ev = as_zmk_activity_state_changed(eh);
+    if (ev == NULL) {
+        return ZMK_EV_EVENT_BUBBLE;
+    }
+
+    led_set_brightness(pwm_leds_dev, DISP_BL,
+                       ev->state == ZMK_ACTIVITY_ACTIVE ? CONFIG_PROSPECTOR_FIXED_BRIGHTNESS : 0);
+
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(prospector_backlight, backlight_activity_listener);
+ZMK_SUBSCRIPTION(prospector_backlight, zmk_activity_state_changed);
 #endif
