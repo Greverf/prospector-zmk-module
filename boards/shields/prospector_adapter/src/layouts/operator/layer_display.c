@@ -4,36 +4,73 @@
 #include <zmk/events/layer_state_changed.h>
 #include <zmk/event_manager.h>
 #include <zmk/keymap.h>
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+#include <zmk/events/hid_indicators_changed.h>
+#endif
+#ifdef CONFIG_DT_HAS_ZMK_BEHAVIOR_CAPS_WORD_ENABLED
+#include <zmk/events/caps_word_state_changed.h>
+#endif
 
 #include "display_colors.h"
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
+static bool caps_lock_on = false;
+static bool caps_word_on = false;
+
 struct layer_display_state {
     uint8_t index;
+    bool caps;
 };
 
 static void layer_display_update_cb(struct layer_display_state state) {
     struct zmk_widget_layer_display *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
         for (int i = 0; i < LAYER_DOT_COUNT; i++) {
-            lv_color_t color = (i == state.index)
-                ? lv_color_hex(DISPLAY_COLOR_LAYER_DOT_ACTIVE)
-                : lv_color_hex(DISPLAY_COLOR_LAYER_DOT_INACTIVE);
+            lv_color_t color;
+            if (i == state.index) {
+                color = lv_color_hex(state.caps ? DISPLAY_COLOR_LAYER_DOT_CAPS
+                                                : DISPLAY_COLOR_LAYER_DOT_ACTIVE);
+            } else {
+                color = lv_color_hex(DISPLAY_COLOR_LAYER_DOT_INACTIVE);
+            }
             lv_obj_set_style_bg_color(widget->dots[i], color, LV_PART_MAIN);
         }
     }
 }
 
 static struct layer_display_state layer_display_get_state(const zmk_event_t *eh) {
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+    if (eh != NULL) {
+        const struct zmk_hid_indicators_changed *hi = as_zmk_hid_indicators_changed(eh);
+        if (hi != NULL) {
+            caps_lock_on = (hi->indicators & 0x02) != 0; /* bit de Caps Lock */
+        }
+    }
+#endif
+#ifdef CONFIG_DT_HAS_ZMK_BEHAVIOR_CAPS_WORD_ENABLED
+    if (eh != NULL) {
+        const struct zmk_caps_word_state_changed *cw = as_zmk_caps_word_state_changed(eh);
+        if (cw != NULL) {
+            caps_word_on = cw->active;
+        }
+    }
+#endif
     return (struct layer_display_state){
         .index = zmk_keymap_highest_layer_active(),
+        .caps = caps_lock_on || caps_word_on,
     };
 }
 
 ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_display, struct layer_display_state,
                             layer_display_update_cb, layer_display_get_state)
 ZMK_SUBSCRIPTION(widget_layer_display, zmk_layer_state_changed);
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+ZMK_SUBSCRIPTION(widget_layer_display, zmk_hid_indicators_changed);
+#endif
+#ifdef CONFIG_DT_HAS_ZMK_BEHAVIOR_CAPS_WORD_ENABLED
+ZMK_SUBSCRIPTION(widget_layer_display, zmk_caps_word_state_changed);
+#endif
 
 int zmk_widget_layer_display_init(struct zmk_widget_layer_display *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
