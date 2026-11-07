@@ -78,7 +78,19 @@ static struct modifier_indicator_state modifier_indicator_get_state(const zmk_ev
 ZMK_DISPLAY_WIDGET_LISTENER(widget_modifier_indicator, struct modifier_indicator_state,
                             modifier_indicator_update_cb, modifier_indicator_get_state)
 ZMK_SUBSCRIPTION(widget_modifier_indicator, zmk_keycode_state_changed);
+/* Re-lee los modificadores 20 ms después del evento, cuando el HID ya se actualizó
+   (necesario para las home-row mods / hold-tap). */
+static void mods_refresh_work_cb(struct k_work *work) {
+    modifier_indicator_update_cb(modifier_indicator_get_state(NULL));
+}
+static K_WORK_DELAYABLE_DEFINE(mods_refresh_work, mods_refresh_work_cb);
 
+static int mods_refresh_listener(const zmk_event_t *eh) {
+    k_work_reschedule_for_queue(zmk_display_work_q(), &mods_refresh_work, K_MSEC(20));
+    return ZMK_EV_EVENT_BUBBLE;
+}
+ZMK_LISTENER(mods_refresh, mods_refresh_listener);
+ZMK_SUBSCRIPTION(mods_refresh, zmk_keycode_state_changed);
 #ifdef CONFIG_DT_HAS_ZMK_BEHAVIOR_CAPS_WORD_ENABLED
 ZMK_SUBSCRIPTION(widget_modifier_indicator, zmk_caps_word_state_changed);
 #endif
