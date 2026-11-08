@@ -132,10 +132,23 @@ static void arc_width_anim_cb(void *var, int32_t value) {
 }
 
 static void animate_arc_width(lv_obj_t *arc, int32_t target_width) {
+    /* Cancela cualquier animación pendiente antes de comparar. */
+    lv_anim_delete(arc, arc_width_anim_cb);
+
     int32_t current_width = lv_obj_get_style_arc_width(arc, LV_PART_MAIN);
     if (current_width == target_width) {
         return;
     }
+
+    lv_anim_t anim;
+    lv_anim_init(&anim);
+    lv_anim_set_var(&anim, arc);
+    lv_anim_set_values(&anim, current_width, target_width);
+    lv_anim_set_time(&anim, ARC_WIDTH_ANIM_DURATION);
+    lv_anim_set_exec_cb(&anim, arc_width_anim_cb);
+    lv_anim_set_path_cb(&anim, lv_anim_path_ease_out);
+    lv_anim_start(&anim);
+}
 
     lv_anim_t anim;
     lv_anim_init(&anim);
@@ -153,10 +166,22 @@ static void arc_value_anim_cb(void *var, int32_t value) {
 }
 
 static void animate_arc_value(lv_obj_t *arc, int32_t target_value) {
+    lv_anim_delete(arc, arc_value_anim_cb);
+
     int32_t current_value = lv_arc_get_value(arc);
     if (current_value == target_value) {
         return;
     }
+
+    lv_anim_t anim;
+    lv_anim_init(&anim);
+    lv_anim_set_var(&anim, arc);
+    lv_anim_set_values(&anim, current_value, target_value);
+    lv_anim_set_time(&anim, ARC_VALUE_ANIM_DURATION);
+    lv_anim_set_exec_cb(&anim, arc_value_anim_cb);
+    lv_anim_set_path_cb(&anim, lv_anim_path_bezier_battery);
+    lv_anim_start(&anim);
+}
 
     lv_anim_t anim;
     lv_anim_init(&anim);
